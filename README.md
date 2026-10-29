@@ -65,34 +65,34 @@ We may add additional tools as the project progresses.
 
 ## Initial Implementation Plan and Timeline
 
-### Weeks 1–2: Research and Scope
+### Weeks 1–4: Research and Scope
 
 - Review research related to agentic AI security.
 - Define the system architecture and scope.
 - Identify assets, trust boundaries, and selected attack scenarios.
 - Finalize the initial threat model.
 
-### Weeks 3–4: Prototype and Baseline
+### Weeks 5-8: Prototype and Baseline
 
 - Build the initial multi-agent system.
 - Configure the selected tools, data, and memory components.
 - Establish logging and repeatable test conditions.
 - Perform baseline security testing.
 
-### Week 5: Defense Implementation
+### Weeks 9-12: Defense Implementation
 
 - Add selected safeguards.
 - Implement tool permission controls.
 - Add input, output, and memory protections.
 
-### Weeks 6–7: Evaluation
+### Weeks 13-16: Evaluation
 
 - Repeat the selected attack scenarios.
 - Record security and task-performance results.
 - Compare baseline and defended results.
 - Identify which safeguards were effective.
 
-### Week 8: Analysis and Delivery
+### Week 17-20: Analysis and Delivery
 
 - Analyze final results.
 - Document findings and limitations.
