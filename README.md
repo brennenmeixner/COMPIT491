@@ -72,15 +72,12 @@ We may add additional tools as the project progresses.
 - Identify assets, trust boundaries, and selected attack scenarios.
 - Finalize the initial threat model.
 
-### Weeks 5-8: Prototype and Baseline
+### Weeks 5-12: Prototype and Baseline + Defense Implementation
 
 - Build the initial multi-agent system.
 - Configure the selected tools, data, and memory components.
 - Establish logging and repeatable test conditions.
 - Perform baseline security testing.
-
-### Weeks 9-12: Defense Implementation
-
 - Add selected safeguards.
 - Implement tool permission controls.
 - Add input, output, and memory protections.
