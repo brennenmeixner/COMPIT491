@@ -1,0 +1,7 @@
+# The model is deliberately not chosen here. Set OLLAMA_MODEL (see .env.example).
+# A value of the form ${NAME} is read from the environment and must be set.
+model: ${OLLAMA_MODEL}
+base_url: ${OLLAMA_BASE_URL}
+
+temperature: 0.0
+seed: 491

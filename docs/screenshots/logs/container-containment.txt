@@ -1,0 +1,9 @@
+uid=10001(agentsec) gid=10001(agentsec) groups=10001(agentsec)
+touch: cannot touch '/app/x': Read-only file system
+touch: cannot touch '/etc/x': Read-only file system
+data writable
+logs writable
+outbox writable
+memory writable
+('192.0.2.1', 80) blocked: [Errno 101] Network is unreachable
+('1.1.1.1', 443) blocked: [Errno 101] Network is unreachable

@@ -1,0 +1,18 @@
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:33166 - "GET /health HTTP/1.1" 200 OK
+INFO:     172.23.0.4:40496 - "GET /health HTTP/1.1" 200 OK
+INFO:     172.23.0.4:40500 - "GET / HTTP/1.1" 200 OK
+INFO:     172.23.0.4:40500 - "GET /style.css HTTP/1.1" 200 OK
+INFO:     172.23.0.4:40504 - "GET /common.js HTTP/1.1" 200 OK
+INFO:     172.23.0.4:40518 - "GET /console.js HTTP/1.1" 200 OK
+INFO:     172.23.0.4:40518 - "GET /config/defenses HTTP/1.1" 200 OK
+INFO:     172.23.0.4:40504 - "GET /scenarios HTTP/1.1" 200 OK
+INFO:     172.23.0.4:40500 - "GET /results HTTP/1.1" 200 OK
+INFO:     172.23.0.4:40522 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     172.23.0.4:40524 - "GET /results.html HTTP/1.1" 200 OK
+INFO:     172.23.0.4:40524 - "GET /results.js HTTP/1.1" 200 OK
+INFO:     172.23.0.4:40524 - "GET /results HTTP/1.1" 200 OK
+INFO:     172.23.0.4:40524 - "GET /favicon.ico HTTP/1.1" 404 Not Found

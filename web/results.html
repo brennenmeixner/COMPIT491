@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Results - securing-agent</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <strong>securing-agent</strong>
+  <nav aria-label="Main">
+    <a href="/">run</a>
+    <a href="/results.html" aria-current="page">results</a>
+  </nav>
+  <span class="dim push-right">model: <span id="model">-</span></span>
+</header>
+
+<main class="results">
+  <fieldset>
+    <legend><h2>attack success rate (lower is better)</h2></legend>
+    <div class="scroll"><div id="attack-grid" class="grid attack-grid"></div></div>
+  </fieldset>
+
+  <fieldset>
+    <legend><h2>normal tasks</h2></legend>
+    <div class="scroll"><div id="task-grid" class="grid task-grid"></div></div>
+  </fieldset>
+
+  <div id="note" class="dim">values fill from GET /results when runs finish</div>
+</main>
+
+<footer>
+  <span>scenarios: <span id="scenario-count">-</span></span>
+  <span>trials per scenario: <span id="trial-count">-</span></span>
+  <span>seed: <span id="seed">-</span></span>
+</footer>
+<script src="common.js"></script>
+<script src="results.js"></script>
+</body>
+</html>

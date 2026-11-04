@@ -1,0 +1,18 @@
+# One flag per defense layer. No layer is implemented yet, so these flags change nothing.
+# `baseline` is intentionally permissive so attacks have something to find; never harden it.
+# Loading fails if `baseline` is not all off or `all` is not all on.
+active_profile: baseline
+
+profiles:
+  baseline:
+    input_validation: false
+    output_validation: false
+    tool_permissions: false
+    memory_controls: false
+    sandbox: false
+  all:
+    input_validation: true
+    output_validation: true
+    tool_permissions: true
+    memory_controls: true
+    sandbox: true

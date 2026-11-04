@@ -1,0 +1,16 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.16, pytest-9.2.0, pluggy-1.7.0
+rootdir: /app
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.16.0, langsmith-0.14.17
+collected 59 items
+
+tests/integration/test_api_ui.py ..............                          [ 23%]
+tests/integration/test_containment.py ...                                [ 28%]
+tests/integration/test_health.py .....                                   [ 37%]
+tests/unit/test_cli.py ......                                            [ 47%]
+tests/unit/test_config.py .................                              [ 76%]
+tests/unit/test_event_log.py ..............                              [100%]
+
+============================== 59 passed in 1.84s ==============================
