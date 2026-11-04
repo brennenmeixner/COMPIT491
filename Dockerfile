@@ -33,6 +33,8 @@ RUN mkdir -p logs outbox memory && chown -R agentsec:agentsec data logs outbox m
 
 ENV PATH="/app/.venv/bin:$PATH" \
     AGENTSEC_CONFIG_DIR=/app/config \
+    AGENTSEC_SCENARIO_DIR=/app/scenarios \
+    AGENTSEC_WEB_DIR=/app/web \
     HOME=/tmp \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \

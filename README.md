@@ -114,7 +114,7 @@ curl http://127.0.0.1:8000/health
 docker compose down
 ```
 
-The API is published on `127.0.0.1` only. Set `APP_PORT` to use a port other than 8000. Compose does not rebuild an existing image, so run `docker compose build` after changing the code.
+While it's running, the browser UI is at http://127.0.0.1:8000/. The API and UI are published on `127.0.0.1` only. Set `APP_PORT` to use a port other than 8000. Compose does not rebuild an existing image, so run `docker compose build` after changing the code.
 
 ### Connect a model
 
@@ -172,4 +172,6 @@ uv run pytest -m "not llm and not container"
 
 **Current Phase:** Milestone 1, the project skeleton
 
-So far this is the config loader, event log, `agentsec check` command, a `/health` endpoint and the containers. Agents, tools, attack scenarios and defenses are not built yet. Defense flags exist in `config/defenses.yaml` but do not change anything until the layers are implemented.
+So far this is the config loader, event log, `agentsec check` command, read-only API endpoints, the browser UI's two screens and the containers. Agents, tools, attack scenarios, defenses and the harness are not built yet, so the UI shows empty states and a run can't be started. Defense flags exist in `config/defenses.yaml` and the UI, but do not change anything until the layers are implemented.
+
+`Securing the Agent UI.html` is the design mock for the UI. Its sample attack is scripted, not a real result. See `outline.md` for the full project outline.

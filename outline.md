@@ -2,7 +2,7 @@
 
 COMP/IT 491 capstone, CSU Channel Islands. Team: Brennen Meixner (agent system), Jesus Mariano (security defenses), Alejandra Salazar (threat analysis and testing). Adviser: Dr. Reza Abdolee.
 
-**Status: milestone 1 of 7 (the skeleton) is complete.** The containers, config loading, event log, CLI and health endpoint run and are tested. Agents, tools, attacks, defenses and the browser UI do not exist yet, so there are no security results.
+**Status: milestone 1 of 7 (the skeleton) is complete, and the browser UI's two screens are built ahead of schedule.** The containers, config loading, event log, CLI, read-only API and UI run and are tested. Agents, tools, attacks, defenses and the harness do not exist yet, so a run can't be started and there are no security results.
 
 ## 1. What the project is
 
@@ -25,7 +25,7 @@ Three priorities shape the project, in this order:
 | 3 | Agents and supervisor on the baseline, with a scripted stub model | Not started |
 | 4 | Harness: scenarios, runner, oracles, benign suite, metrics | Not started |
 | 5 | Defenses, one layer at a time | Not started |
-| 6 | Full API and browser UI | Not started |
+| 6 | Full API and browser UI | **Partly done:** both screens and 3 of the 5 endpoints. `POST /runs` and the event stream wait on the harness. |
 | 7 | Full evaluation on Ollama, report tables and screenshots | Not started |
 
 ## 3. What is built
@@ -39,17 +39,19 @@ COMPIT491/
 │   ├── models.yaml           # model and URL from the environment, plus temperature and seed
 │   ├── defenses.yaml         # five layer flags, profiles baseline and all
 │   └── policy.yaml           # tool allowlists, path roots, recipients, call caps
-├── data/  scenarios/  web/   # empty placeholders for later milestones
+├── data/  scenarios/         # empty placeholders for later milestones
+├── web/                      # browser UI: plain HTML, CSS and JavaScript, no build step
 ├── docs/screenshots/         # captured outputs from real runs (section 7)
 ├── src/agentsec/
 │   ├── config.py             # loads and validates the three YAML files
 │   ├── event_log.py          # JSONL event writer and the closed event-type enum
 │   ├── cli.py                # agentsec --help, agentsec check
-│   ├── api/app.py            # FastAPI app with GET /health only
+│   ├── api/app.py            # FastAPI app: read-only endpoints, serves web/
 │   └── agents/ tools/ memory/ defenses/ harness/ evaluation/   # empty packages
 ├── tests/
 │   ├── unit/                 # test_config.py, test_event_log.py, test_cli.py
-│   └── integration/          # test_health.py, test_containment.py
+│   └── integration/          # test_health.py, test_api_ui.py, test_containment.py
+├── Securing the Agent UI.html  # the team's UI design mock (see "Browser UI" below)
 ├── Dockerfile  compose.yaml  # the container setup
 ├── pyproject.toml  uv.lock   # dependencies, pinned through the lock file
 └── .env.example  .gitignore  .dockerignore
@@ -79,7 +81,32 @@ Nothing calls the logger in normal operation yet. Agents and tools will start us
 
 ### API (`api/app.py`)
 
-`create_app()` serves `GET /health` only. The OpenAPI and docs routes are turned off and no CORS is configured. `/health` doesn't load any config, so the app starts on a clean checkout before a model has been chosen.
+`create_app()` serves these read-only routes. The OpenAPI and docs routes are turned off and no CORS is configured. Config is read per request, so the app starts on a clean checkout before a model has been chosen.
+
+| Route | Returns |
+| --- | --- |
+| `GET /health` | `{"status":"ok"}` |
+| `GET /config/defenses` | The active profile and profiles from `defenses.yaml` |
+| `GET /scenarios` | Correctly named files in `scenarios/attacks` and `scenarios/benign`. Empty today. |
+| `GET /results` | Model, seed and counts, with empty rates until the harness produces logs |
+| `GET /`, `/results.html` | The two UI screens, served from `web/` |
+
+**Not built yet:** `POST /runs` and `GET /runs/{id}/events`. They need the harness.
+
+### Browser UI (`web/`)
+
+`Securing the Agent UI.html` is the design. `web/` implements its two screens without a framework or build step, and it shows only what the API returns.
+
+**The design file is a clickable mock, not results.** Its scenario names, event log and `ATTACK SUCCEEDED` line are scripted inside the page, and no attack ran to produce them. The real screens deliberately don't copy that data, so they show empty states until the harness exists.
+
+| Screen | Works today | Waiting on the harness |
+| --- | --- | --- |
+| Run console | Defense toggles, `baseline` and `all` shortcuts, trials input, status bar with profile, layers on and seed | Scenario list is empty, so `[ run ]` stays disabled and no events appear |
+| Results | Both tables, status bar with scenario count and seed | Every cell shows `-` |
+
+The console's run path is written: it sends `POST /runs`, then streams events with `EventSource`. It renders log lines, a `└` note for each `defense` event, and the result line. So far this has only been tested in a browser against a throwaway scripted stub, not a real backend. That test used this message format, which the harness must follow or change: `POST /runs` takes `{scenario_id, defenses, trials}` and returns `{run_id}`, and the stream sends `Event` objects plus a final `result` event of `{attack_succeeded, detail}`.
+
+The toggles have no effect on anything yet, because no defense layer exists. All API values are rendered with `textContent`, so markup in model or log content stays plain text.
 
 ## 4. Container architecture
 
@@ -120,7 +147,7 @@ The app can't reach the internet directly, but it can call Ollama's API, and Oll
 
 1. `docker compose build` installs the locked dependencies into one image.
 2. `docker compose up` starts `app` and `ollama`. Once the `app` healthcheck passes, `gateway` starts.
-3. A request to `127.0.0.1:8000/health` goes through `gateway`, across `backend`, to `app`.
+3. A browser request to `127.0.0.1:8000` goes through `gateway`, across `backend`, to `app`, which serves the UI from `web/`. The page then calls `/config/defenses`, `/scenarios` and `/results` the same way and fills in its values.
 4. `agentsec check` runs inside the container. `config.py` loads the YAML and environment values into typed models, then the CLI prints them and tests the connection to Ollama.
 5. `docker compose run --rm test` runs the tests in the same image with the same hardening, so the containment tests check real container settings.
 
@@ -158,32 +185,35 @@ The app can't reach the internet directly, but it can call Ollama's API, and Oll
 | Policy engine | Five layers in ordinary code outside the model, default deny | Flags from `DefensesConfig`, rules from `PolicyConfig`, `defense` events |
 | Harness | Replays YAML scenarios for N trials, then scores them with code oracles | Reads the JSONL logs and the outbox |
 | Metrics | Rates and tables generated from logs, never typed by hand | Reads the JSONL logs |
-| API and UI | Five endpoints, a run console and a results screen | Extends `create_app()`, replaces the current lack of a UI |
+| Remaining API | `POST /runs` and the live event stream | Extends `create_app()`, feeds the console's existing run path |
+| Real results in the UI | `GET /results` computes rates from logs | Fills the existing Results grids |
 
 ## 6. Test results
 
-From the last run on this code, using `docker compose run --rm test`: **46 passed.** `ruff check` and `ruff format --check` both pass.
+From the last run on this code, using `docker compose run --rm test`: **59 passed.** `ruff check` and `ruff format --check` both pass.
 
 | Test file | Tests | Covers |
 | --- | --- | --- |
 | `unit/test_config.py` | 17 | Valid load, unset model and URL, bad URLs, unknown keys, non-boolean flags, tampered or missing profiles, missing files, bad YAML |
 | `unit/test_event_log.py` | 14 | Line format, append behaviour, closed event types, defense layer required, unsafe run ids |
 | `unit/test_cli.py` | 6 | Help, reachable and unreachable Ollama, unset model, rejected URLs |
-| `integration/test_health.py` | 6 | `/health`, no other routes, no CORS headers |
+| `integration/test_health.py` | 5 | `/health`, docs routes off, no CORS headers |
+| `integration/test_api_ui.py` | 14 | Read-only endpoints, no rates before any run, UI files served, no escaping `web/`, no `innerHTML` |
 | `integration/test_containment.py` | 3 | Non-root, read-only root, no outbound route |
 
-These tests cover the skeleton only and say nothing yet about attacks or defenses. The same checks also passed on a copy of only the files git would track, with no `.env` and no existing image. The containment tests run in `test`. The same checks were also run by hand against the live `app` container.
+These tests cover the skeleton and read-only API only and say nothing yet about attacks or defenses. There are no automated browser tests for the UI's JavaScript; it was checked by hand in headless Chrome. The same 59 tests also passed on a copy of only the files git would track, with no `.env` and no existing image. The containment tests run in `test`. The same checks were also run by hand against the live `app` container.
 
 ## 7. Captured outputs (`docs/screenshots/`)
 
 Everything here comes from real runs of the Docker build.
 
-**There is no UI screenshot because the UI doesn't exist yet.** It arrives in milestone 6. The two images below show the only things a browser can see today.
+**The UI screenshots show empty states on purpose.** They come from the running Docker build, where no scenarios or runs exist yet. For the intended look with a sample attack, open the design mock, `Securing the Agent UI.html`, which is scripted rather than real.
 
 | File | What it shows |
 | --- | --- |
-| `health-endpoint-browser.png` | `/health` in headless Chrome |
-| `root-no-ui-yet-404.png` | `/` returning 404, because no UI is served |
+| `run-console-no-runs-yet.png` | The real Run console on the baseline profile, with no scenarios or events |
+| `results-no-data-yet.png` | The real Results screen, with every cell showing `-` |
+| `logs/results-endpoint.json` | The `GET /results` response behind those screens |
 | `logs/pytest.txt` | The test run |
 | `logs/ruff.txt` | Lint and format checks |
 | `logs/compose-ps.txt` | Running services and the loopback-only port |
@@ -241,7 +271,7 @@ docker compose build
 docker compose run --rm test
 docker compose run --rm test ruff check .
 docker compose up -d
-curl http://127.0.0.1:8000/health
+curl http://127.0.0.1:8000/health         # the UI is at http://127.0.0.1:8000/
 docker compose exec app agentsec check    # exits 1 until OLLAMA_MODEL is set
 docker compose down
 ```

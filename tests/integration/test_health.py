@@ -12,8 +12,8 @@ def test_health_responds_ok_without_any_model_config(monkeypatch: pytest.MonkeyP
     assert response.json() == {"status": "ok"}
 
 
-@pytest.mark.parametrize("path", ["/", "/docs", "/redoc", "/openapi.json"])
-def test_only_health_is_served(path: str) -> None:
+@pytest.mark.parametrize("path", ["/docs", "/redoc", "/openapi.json"])
+def test_framework_docs_routes_are_off(path: str) -> None:
     assert TestClient(create_app()).get(path).status_code == 404
 
 

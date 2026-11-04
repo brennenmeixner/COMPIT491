@@ -41,10 +41,13 @@ class OllamaEndpoint(_Strict):
         return value
 
 
-class ModelsConfig(OllamaEndpoint):
-    model: str = Field(min_length=1)
+class ReproSettings(_Strict):
     temperature: float = Field(ge=0.0)
     seed: int
+
+
+class ModelsConfig(OllamaEndpoint, ReproSettings):
+    model: str = Field(min_length=1)
 
 
 class DefenseFlags(_Strict):
@@ -152,6 +155,14 @@ def load_ollama_endpoint(config_dir: Path, env: Mapping[str, str]) -> OllamaEndp
     path = config_dir / "models.yaml"
     subset = {key: value for key, value in _read_yaml(path).items() if key == "base_url"}
     return _validate(OllamaEndpoint, _resolve_env_references(subset, env, path), path)
+
+
+def load_repro_settings(config_dir: Path) -> ReproSettings:
+    """Load only the seed and temperature, which need no environment variables."""
+    path = config_dir / "models.yaml"
+    keys = ReproSettings.model_fields
+    subset = {key: value for key, value in _read_yaml(path).items() if key in keys}
+    return _validate(ReproSettings, subset, path)
 
 
 def load_defenses(config_dir: Path) -> DefensesConfig:

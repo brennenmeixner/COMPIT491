@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run console - securing-agent</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <strong>securing-agent</strong>
+  <nav aria-label="Main">
+    <a href="/" aria-current="page">run</a>
+    <a href="/results.html">results</a>
+  </nav>
+  <span class="dim push-right">model: <span id="model">-</span></span>
+</header>
+
+<main class="console">
+  <div class="controls">
+    <fieldset>
+      <legend><h2>scenario</h2></legend>
+      <div id="scenarios" class="stack"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend><h2>defenses</h2></legend>
+      <div id="layers" class="stack"></div>
+      <div class="shortcuts">
+        <button type="button" id="baseline" class="link">baseline</button>
+        <button type="button" id="all" class="link">all</button>
+      </div>
+    </fieldset>
+
+    <div class="run-row">
+      <label for="trials" class="dim">trials</label>
+      <input id="trials" type="number" min="1" value="10">
+      <button type="button" id="run" class="run" disabled>[ run ]</button>
+    </div>
+  </div>
+
+  <fieldset class="events">
+    <legend><h2>events: <span id="scenario-name">-</span></h2></legend>
+    <div class="scroll">
+      <div id="log" class="log" hidden>
+        <div class="line dim"><span class="time">time</span><span class="agent">agent</span><span class="event">event</span><span>detail</span></div>
+      </div>
+    </div>
+    <div id="empty" class="dim">no events yet. start a run.</div>
+    <div id="result" class="result" role="status" hidden></div>
+  </fieldset>
+</main>
+
+<footer>
+  <span>profile: <span id="profile">-</span></span>
+  <span>layers on: <span id="layer-count">-</span></span>
+  <span>seed: <span id="seed">-</span></span>
+  <span>run: <span id="run-id">-</span></span>
+</footer>
+<script src="common.js"></script>
+<script src="console.js"></script>
+</body>
+</html>
