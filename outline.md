@@ -207,12 +207,13 @@ These tests cover the skeleton and read-only API only and say nothing yet about 
 
 Everything here comes from real runs of the Docker build.
 
-**The UI screenshots show empty states on purpose.** They come from the running Docker build, where no scenarios or runs exist yet. For the intended look with a sample attack, open the design mock, `Securing the Agent UI.html`, which is scripted rather than real.
+**The UI screenshots show empty states on purpose.** They come from the running Docker build, where no scenarios or runs exist yet. For the intended look with a sample attack, see the design mock image below or open `Securing the Agent UI.html`. Both are scripted rather than real.
 
 | File | What it shows |
 | --- | --- |
 | `run-console-no-runs-yet.png` | The real Run console on the baseline profile, with no scenarios or events |
 | `results-no-data-yet.png` | The real Results screen, with every cell showing `-` |
+| `design-mock-not-real-data.png` | **Not a result and not from the Docker build.** The design mock, with its scripted sample attack. No attack ran, and the image is stamped to say so. |
 | `logs/results-endpoint.json` | The `GET /results` response behind those screens |
 | `logs/pytest.txt` | The test run |
 | `logs/ruff.txt` | Lint and format checks |
