@@ -1,0 +1,98 @@
+# app and test sit only on the internal `backend` network, so they have no route out.
+# Docker does not publish ports from an internal network, so `gateway` carries the one
+# inbound path, on host loopback only.
+
+x-agentsec: &agentsec
+  build: .
+  image: agentsec:local
+  read_only: true
+  tmpfs:
+    - /tmp
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  environment:
+    # Empty means unset. Commands that need a model fail with a clear message.
+    OLLAMA_MODEL: ${OLLAMA_MODEL:-}
+    OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+  networks:
+    - backend
+
+x-relay: &relay
+  image: alpine/socat:1.8.1.3
+  read_only: true
+  user: "65534:65534"
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+
+services:
+  app:
+    <<: *agentsec
+    volumes:
+      - data:/app/data
+      - logs:/app/logs
+      - outbox:/app/outbox
+      - memory:/app/memory
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  gateway:
+    <<: *relay
+    command: TCP-LISTEN:8000,fork,reuseaddr TCP:app:8000
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - 127.0.0.1:${APP_PORT:-8000}:8000
+    networks:
+      - edge
+      - backend
+
+  ollama:
+    image: ollama/ollama:0.40.14
+    volumes:
+      - ollama-models:/root/.ollama
+    networks:
+      - backend
+      - egress # only for pulling models
+
+  test:
+    <<: *agentsec
+    profiles:
+      - test
+    command: pytest
+
+  # For Ollama on the host: --profile host-ollama and OLLAMA_BASE_URL=http://host-ollama:11434
+  host-ollama:
+    <<: *relay
+    profiles:
+      - host-ollama
+    command: TCP-LISTEN:11434,fork,reuseaddr TCP:host.docker.internal:11434
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      - backend
+      - egress
+
+networks:
+  backend:
+    internal: true
+  edge: {}
+  egress: {}
+
+volumes:
+  data: {}
+  logs: {}
+  outbox: {}
+  memory: {}
+  ollama-models: {}

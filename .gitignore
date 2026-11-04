@@ -1,0 +1,28 @@
+# Secrets
+.env
+
+# Runtime output
+# Anchored to the root: src/agentsec/memory/ is source code.
+/logs/
+/outbox/
+/memory/
+/data/test.db
+*.db
+*.sqlite
+*.sqlite3
+
+# Model files
+/models/
+*.gguf
+*.safetensors
+*.bin
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/

@@ -1,0 +1,18 @@
+# Default deny: the policy engine (milestone 5) will allow only what is named here.
+tool_allowlists:
+  orchestrator: []
+  document_agent: [read_file, list_files]
+  data_agent: [query_db]
+  comms_agent: [send_email, write_file]
+
+path_roots:
+  read: [data/docs]
+  write: [outbox]
+
+# PLACEHOLDER: no recipients are allowed until the team defines synthetic addresses.
+recipient_allowlist: []
+
+# PLACEHOLDER: values to be tuned against the benign suite.
+call_caps:
+  per_run: 20
+  per_tool: 10

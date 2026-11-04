@@ -105,8 +105,74 @@ The project is expected to produce a documented threat model, a reproducible mul
 
 The final evaluation will identify which safeguards improved security, whether legitimate tasks were affected, and where additional testing or security controls may be needed.
 
+## Quick Start
+
+You need Docker with Compose. Everything runs in containers.
+
+```bash
+docker compose build             # build the image
+docker compose run --rm test     # run the tests; needs no model and no network
+docker compose up -d             # start the app, its gateway and Ollama
+curl http://127.0.0.1:8000/health
+docker compose down
+```
+
+The API is published on `127.0.0.1` only. Set `APP_PORT` to use a port other than 8000. Compose does not rebuild an existing image, so run `docker compose build` after changing the code.
+
+### Connect a model
+
+No default model is chosen yet, so copy `.env.example` to `.env` and set `OLLAMA_MODEL` to a model that supports tool calling. `/health` works without it. Commands that need a model fail and name the missing variable.
+
+```bash
+docker compose exec ollama ollama pull "$OLLAMA_MODEL"   # needs OLLAMA_MODEL in your shell
+docker compose run --rm app agentsec check               # prints config and Ollama status
+```
+
+`agentsec check` exits non-zero if the config is invalid or Ollama is unreachable.
+
+### Run Ollama on the host
+
+The app has no route out of its internal network, so host Ollama is reached through a relay. Ollama must listen on the Docker bridge, not only on loopback (for example `OLLAMA_HOST=0.0.0.0`, on a machine whose firewall keeps that port private). In `.env`, set:
+
+```bash
+OLLAMA_BASE_URL=http://host-ollama:11434
+```
+
+Then start only the services you need:
+
+```bash
+docker compose --profile host-ollama up -d app gateway host-ollama
+```
+
+### Container layout
+
+| Service | Role | Networks |
+| --- | --- | --- |
+| `app` | API. Non-root, read-only root filesystem, writable volumes for data, logs, outbox and memory | `backend` |
+| `gateway` | Relays `127.0.0.1:8000` on the host to the app | `edge`, `backend` |
+| `ollama` | Official Ollama image, models in a volume | `backend`, `egress` |
+| `test` | Same image as `app`, started on demand | `backend` |
+| `host-ollama` | Optional relay to Ollama on the host (profile `host-ollama`) | `backend`, `egress` |
+
+`backend` is an internal network, so `app` and `test` have no direct route out. `ollama` keeps outbound access for pulling models.
+
+### Lint
+
+```bash
+docker compose run --rm test ruff check .
+docker compose run --rm test ruff format --check .
+```
+
+### Tests outside Docker
+
+Docker is the supported path. The containment tests describe the container, so exclude them on a host:
+
+```bash
+uv run pytest -m "not llm and not container"
+```
+
 ## Project Status
 
-**Current Phase:** Project planning and research
+**Current Phase:** Milestone 1, the project skeleton
 
-We will add source code and implementation materials as the project progresses.
+So far this is the config loader, event log, `agentsec check` command, a `/health` endpoint and the containers. Agents, tools, attack scenarios and defenses are not built yet. Defense flags exist in `config/defenses.yaml` but do not change anything until the layers are implemented.
