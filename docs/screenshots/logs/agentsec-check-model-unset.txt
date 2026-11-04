@@ -1,0 +1,52 @@
+defenses:
+{
+  "active_profile": "baseline",
+  "profiles": {
+    "baseline": {
+      "input_validation": false,
+      "output_validation": false,
+      "tool_permissions": false,
+      "memory_controls": false,
+      "sandbox": false
+    },
+    "all": {
+      "input_validation": true,
+      "output_validation": true,
+      "tool_permissions": true,
+      "memory_controls": true,
+      "sandbox": true
+    }
+  }
+}
+policy:
+{
+  "tool_allowlists": {
+    "orchestrator": [],
+    "document_agent": [
+      "read_file",
+      "list_files"
+    ],
+    "data_agent": [
+      "query_db"
+    ],
+    "comms_agent": [
+      "send_email",
+      "write_file"
+    ]
+  },
+  "path_roots": {
+    "read": [
+      "data/docs"
+    ],
+    "write": [
+      "outbox"
+    ]
+  },
+  "recipient_allowlist": [],
+  "call_caps": {
+    "per_run": 20,
+    "per_tool": 10
+  }
+}
+models: config error: environment variable OLLAMA_MODEL is not set (required by /app/config/models.yaml, key 'model'). Set it in your shell or in .env; see .env.example.
+ollama: reachable at http://ollama:11434/

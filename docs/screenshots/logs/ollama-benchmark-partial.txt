@@ -1,0 +1,25 @@
+benchmarking: qwen3:0.6b llama3.2:1b granite4:350m
+=== qwen3:0.6b
+  want=read_file  got=['read_file'] wall=  74.0s load=  1.8s prompt=417t/37.1s gen=113t/35.0s {"path": "meeting-notes.txt"}
+  want=query_db   got=['query_db'] wall= 257.6s load=  0.0s prompt=416t/3.1s gen=644t/254.5s {"sql": "SELECT COUNT(*) FROM customers;"}
+  want=send_email got=['send_email'] wall=  45.9s load=  0.0s prompt=416t/3.5s gen=138t/42.3s {"to": "ops@example.test", "subject": "Status", "body": "All good."}
+  want=list_files got=['list_files'] wall=  48.7s load=  0.0s prompt=412t/3.0s gen=153t/45.6s {"folder": "reports"}
+  want=read_file  got=['read_file'] wall=  35.8s load=  0.0s prompt=417t/3.7s gen=102t/32.1s {"path": "meeting-notes.txt"}
+  want=query_db   got=['query_db'] wall= 258.7s load=  0.0s prompt=416t/3.5s gen=644t/255.2s {"sql": "SELECT COUNT(*) FROM customers;"}
+  want=send_email got=['send_email'] wall=  50.3s load=  0.0s prompt=416t/6.3s gen=138t/44.0s {"subject": "Status", "body": "All good.", "to": "ops@example.test"}
+  want=list_files got=['list_files'] wall=  54.8s load=  0.0s prompt=412t/2.5s gen=153t/52.2s {"folder": "reports"}
+  SUMMARY qwen3:0.6b: correct 8/8, median wall 54.8s
+=== llama3.2:1b
+  want=read_file  got=['read_file'] wall=  54.2s load=  2.4s prompt=445t/42.0s gen=27t/9.9s {"path": "meeting-notes.txt"}
+  want=query_db   got=['query_db'] wall=   7.2s load=  0.0s prompt=444t/2.6s gen=21t/4.7s {"sql": "SELECT COUNT(*) FROM customers"}
+  want=send_email got=['send_email'] wall=   9.1s load=  0.0s prompt=444t/2.3s gen=30t/6.8s {"type": "function", "function": "send_email", "parameters": {"body": 
+  want=list_files got=['list_files'] wall=   5.4s load=  0.0s prompt=440t/1.8s gen=17t/3.5s {"folder": "reports"}
+  want=read_file  got=['read_file'] wall=  15.0s load=  0.0s prompt=445t/2.6s gen=32t/12.4s {"path": "meeting-notes.txt"}
+  want=query_db   got=['query_db'] wall=   8.1s load=  0.0s prompt=444t/2.3s gen=21t/5.8s {"sql": "SELECT COUNT(*) FROM customers"}
+  want=send_email got=['send_email'] wall=   9.9s load=  0.0s prompt=444t/2.7s gen=30t/7.2s {"type": "function", "function": "send_email", "parameters": {"body": 
+  want=list_files got=['list_files'] wall=   5.7s load=  0.0s prompt=440t/1.7s gen=17t/4.0s {"folder": "reports"}
+  SUMMARY llama3.2:1b: correct 8/8, median wall 9.1s
+=== granite4:350m
+  want=read_file  got=['read_file'] wall=  72.2s load=  4.6s prompt=462t/61.5s gen=22t/6.1s {"path": "meeting-notes.txt"}
+
+[killed]

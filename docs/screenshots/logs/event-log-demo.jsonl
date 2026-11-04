@@ -1,0 +1,2 @@
+{"run_id":"demo-milestone1","scenario_id":"demo-no-scenario","trial":0,"timestamp":"2026-11-04T14:41:42.872526Z","agent":"demo","event_type":"tool_call","content":"hand-written demo event, no agent ran","defense":null}
+{"run_id":"demo-milestone1","scenario_id":"demo-no-scenario","trial":0,"timestamp":"2026-11-04T14:41:42.872904Z","agent":"demo","event_type":"defense","content":"hand-written demo event, no defense ran","defense":"tool_permissions"}
